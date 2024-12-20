@@ -1,31 +1,37 @@
 import React, { useEffect } from 'react'
-import axios from 'axios'
 import './Card.css'
-import './App.css'
+import { css } from './styled-system/css'
+import { CharCardStyles,Right,statusType,subMenuInfo,tag,rightPara } from './PandaStyles/CardStyles'
 
 function Card({name,status,type,lastKnownLocation,firstSeen,img}) {
-    useEffect(()=>{
-        console.log(img)
-    },[])
   return (
-    <div className='char-card'>
-        <div className="left-img" style={{
+    <div className={CharCardStyles}>
+        <div className={css({flex:"4",bgSize:"contain"})} style={{
             backgroundImage:`url(${img})`
         }}>
-            {/* <img src={img} className='char-img' alt="" /> */}
         </div>
-        <div className="right">
-            <p className="name">{name}</p>
-            <p className="status-type">{status} - {type}</p>
+        <div className={Right}>
+            <p className={css({fontSize:"25px",fontWeight:"bold"})}>{name}</p>
+            <p className={statusType}> 
+            <span
+                className={css({
+                    width:'10px',
+                    height:'10px',
+                    borderRadius:'50%',
+                    backgroundColor: status=='Alive'?'green':status=='Dead'?'red':'orange'
+                })}
+            >
+            </span> 
+            {status} - {type}</p>
 
-            <p className='last'>
-                <span>Last Known location:</span>
-                <span>{lastKnownLocation}</span>
+            <p className={subMenuInfo}>
+                <span className={tag}>Last Known location:</span>
+                <span className={css({fontSize:"20px"})}>{lastKnownLocation}</span>
             </p>
 
-            <p className="firstseen">
-                <span>First Seen in:</span>
-                <span>{firstSeen}</span>
+            <p className={subMenuInfo}>
+                <span className={tag}>First Seen in:</span>
+                <span className={css({fontSize:"20px"})}>{firstSeen}</span>
             </p>
         </div>
     </div>

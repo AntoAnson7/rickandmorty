@@ -1,45 +1,35 @@
 import { useState,useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Card from './Card'
-import axios from 'axios'
+import {useQuery} from '@apollo/client'
+import {GET_ALL_CHARACTERS} from './operations/queries/GET_ALL_CHARACTERS'
+import {css} from './styled-system/css'
+import { gridStyle,searchInputStyles } from './PandaStyles/AppStyles'
 
 function App() {
   const [search,setSearch]=useState('')
-  // const [status,setStatus]=useState(null)
 
-  const [data,setData]=useState([])
-  const getData=async()=>{
-    console.log(search)
-    if(search==''){
-      const res=await axios.get('https://rickandmortyapi.com/api/character')
-      setData(res.data.results)
+  const {loading,error,data,refetch} = useQuery(GET_ALL_CHARACTERS,{
+    variables:{
+      page:2,
     }
-    else{
-      const res=await axios.get(`https://rickandmortyapi.com/api/character/?name=${search}`)
-      setData(res.data.results)
-    }
-}
+  })
 
-const getByStatus=async(status)=>{
-  console.log(status)
-  const res=await axios.get(`https://rickandmortyapi.com/api/character/?status=${status}`)
-  setData(res.data.results)
-}
+  console.log(data)
 
-
-
-
-useEffect(()=>{
-    // getData()
-    console.log(data)
-},[search])
+  if(loading) return <p>Loading...</p>
 
   return (
     <>
-    <input type="text" onChange={(e)=>setSearch(e.target.value)}/>
+    {/* <p className={css({fontSize:"2xl",color:"orange",margin:'10px',fontWeight:"bold",marginLeft:"75px"})}>Rick and Morty</p> */}
+    <input className={searchInputStyles} type="text" onChange={(e)=>refetch({
+        page:3,
+        filters:{
+          name:e.target.value
+        }
+      
+    })}/>
 
-    {search&&<select name="" id="" onChange={(e)=>{
+    {search&&<select className='status-input' name="" id="" onChange={(e)=>{
       getByStatus(e.target.value)
       }}>
       <option value="alive">Alive</option>
@@ -47,28 +37,21 @@ useEffect(()=>{
       <option value="unknown">Unknown</option>
     </select>}
 
-    <div className="grid">
-    {data&&data.map(d=>{
+    <div className={gridStyle}>
+    {data&&data.characters.results.map(d=>{
         return <Card 
         name={d.name} 
         status={d.status}
-        type={d.type}
+        type={d.species}
         lastKnownLocation={d.location.name}
         firstSeen={d.origin.name}
         img={d.image}
         />
       })}
     </div>
-
     </>
   )
 }
 
 export default App
 
-// name (string): Character name
-// status (string): Whether the character is alive
-// type (string): Character type
-// lastKnownLocation (string): Last known location
-// firstSeen (string): First seen location
-// img (string): Character image URL
